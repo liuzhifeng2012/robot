@@ -3,9 +3,9 @@
     <div class="body-header">机器人</div>
     <div class="body-content" ref="bodyContent">
       <div class="greetings">
-        <div class="greetings-title">
+        <!-- <div class="greetings-title">
           已为您分配新冠肺炎相关专业医生，请咨询“新冠肺炎”健康问题吧
-        </div>
+        </div> -->
         <div class="guess">猜你要问</div>
         <div class="greetings-content">
           <div
@@ -235,9 +235,9 @@ a:visited {
         opacity: 1;
       }
       .guess {
-        font-size: 12px;
+        font-size: 15px;
         color: #999999;
-        margin-top: 15px;
+        // margin-top: 15px;
       }
       .greetings-content {
         margin-top: 15px;
