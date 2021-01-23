@@ -29,25 +29,29 @@
         </div>
         <div
           class="answer-wrap"
-          v-if="qaItem.answerType == 1 && qaItem.answerText"
+          v-if="qaItem.answerType == 0 && qaItem.answerText"
         >
-          <div class="answer">
-            <img
-              :src="qaItem.answerText"
-              alt=""
-              :preview="qaItem.timestamp"
-            />
+          <div class="answer" style="background: #fff">
+            {{ qaItem.answerText }}
           </div>
         </div>
         <div
           class="answer-wrap"
-          v-if="qaItem.answerType == 0 && qaItem.answerText"
+          v-if="qaItem.answerType == 1 && qaItem.answerText"
         >
-          <div class="answer" style="background: #fff">
-            <!-- <div class="text"> -->
-            {{ qaItem.answerText }}
-            <!-- </div> -->
+          <div class="answer">
+            <img :src="qaItem.answerText" alt="" :preview="qaItem.timestamp" />
           </div>
+        </div>
+        <div
+          class="answer-wrap"
+          v-if="qaItem.answerType == 2 && qaItem.answerText"
+        >
+          <div
+            class="answer"
+            v-html="qaItem.answerText"
+            style="background: #fff; color: #03a8fe; text-decoration: underline"
+          ></div>
         </div>
       </div>
     </div>
@@ -102,19 +106,23 @@ export default {
           question: questionTxt,
           answerText: "",
           answerType: 0,
-          timestamp:new Date().getTime()
+          timestamp: new Date().getTime(),
         });
 
         //根据问题查询答案
         // util.ajax.post(url,params).then(res=>{
 
-        // //答案是文本
-        // this.qaArr[this.qaArr.length - 1].answerText = "哈哈哈哈双方都";
-        // this.qaArr[this.qaArr.length - 1].answerType = 0;
-        //答案是图片
-        this.qaArr[this.qaArr.length - 1].answerText =
-          "http://benyouhuifile.it168.com/forum/201709/04/142843gxbi5i5zbwtztbby.jpg";
-        this.qaArr[this.qaArr.length - 1].answerType = 1;
+        //答案是文本
+        this.qaArr[this.qaArr.length - 1].answerText = "哈哈哈哈双方都";
+        this.qaArr[this.qaArr.length - 1].answerType = 0;
+        // //答案是图片
+        // this.qaArr[this.qaArr.length - 1].answerText =
+        //   "http://benyouhuifile.it168.com/forum/201709/04/142843gxbi5i5zbwtztbby.jpg";
+        // this.qaArr[this.qaArr.length - 1].answerType = 1;
+        // //答案是超链
+        // this.qaArr[this.qaArr.length - 1].answerText =
+        //   "<a href='https://www.baidu.com/'>百度</a>";
+        // this.qaArr[this.qaArr.length - 1].answerType = 2;
         //页面元素滚动到聊天室底部
         this.$nextTick(() => {
           let bodyContent = this.$refs.bodyContent; // 获取对象
@@ -184,6 +192,11 @@ export default {
   updated() {},
 };
 </script>
+<style lang="scss">
+a:visited {
+  color: #03a8fe !important;
+} /* 已访问的链接 */
+</style>
 <style scoped  lang="scss">
 .body-layout {
   .body-header {
@@ -283,6 +296,7 @@ export default {
         padding: 9px 12.5px;
         font-size: 16px;
         color: #444444;
+
         img {
           width: 150px;
           height: 150px;
