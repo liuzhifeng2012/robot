@@ -201,7 +201,7 @@ export default {
       }
     },
     //获取开场数组
-    getGreetings() {
+    getGreetings(msgItem, msgIndex) {
       var params = {
         eqId: this.eqId,
         robotId: this.robotId,
@@ -213,19 +213,38 @@ export default {
         businessType: this.businessType,
         robotName: "",
       };
-      sendMsg(params).then((res) => {
-        let resData = JSON.parse(res);
-        if (resData.data && resData.data.length) {
-          resData.data.forEach((item) => {
-            item.answerList &&
-              item.answerList.forEach((jtem) => {
-                jtem.timestamp = new Date().getTime();
-              });
-          });
-        }
-        console.log("open", resData);
-        this.msgArr.push(resData.data[0]);
-      });
+      //换一换
+      if (msgItem) {
+        sendMsg(params).then((res) => {
+          let resData = JSON.parse(res);
+          if (resData.data && resData.data.length) {
+            resData.data.forEach((item) => {
+              item.answerList &&
+                item.answerList.forEach((jtem) => {
+                  jtem.timestamp = new Date().getTime();
+                });
+            });
+          }
+          console.log("open 换一换", resData); 
+          msgItem.centerQuestionList=resData[0].centerQuestionList
+        });
+      }
+      //开场
+      else {
+        sendMsg(params).then((res) => {
+          let resData = JSON.parse(res);
+          if (resData.data && resData.data.length) {
+            resData.data.forEach((item) => {
+              item.answerList &&
+                item.answerList.forEach((jtem) => {
+                  jtem.timestamp = new Date().getTime();
+                });
+            });
+          }
+          console.log("open", resData);
+          this.msgArr.push(resData.data[0]);
+        });
+      }
     },
     // goDetail() {
     //   this.$router.push({ path: "/pages/Detail/123" });
