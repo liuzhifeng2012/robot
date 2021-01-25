@@ -2,57 +2,101 @@
   <div class="body-layout">
     <div class="body-header">机器人</div>
     <div class="body-content" ref="bodyContent">
-      <div class="greetings">
-        <!-- <div class="greetings-title">
+      <div v-for="(msgItem, msgIndex) in msgArr" :key="msgIndex">
+        <!--答案列表(开场的答案) -->
+        <template v-if="msgIndex == 0">
+          <div
+            v-for="(answerItem, answerIndex) in msgItem.answerList"
+            :key="answerIndex"
+          >
+            <!-- //text：文本， img：图片地址 ，video：视频地址 ，filepath：文件地址， imgAndText：卡片集合对象，excel:表格，object:自定义对象 （现阶段只考虑text img）-->
+            <div
+              class="answer-wrap"
+              v-if="answerItem.answerType == 'text' && answerItem.text"
+            >
+              <div
+                class="answer"
+                style="background: #fff; margin-top: 0; margin-bottom: 15px"
+                v-html="answerItem.text"
+              ></div>
+            </div>
+            <div
+              class="answer-wrap"
+              v-if="answerItem.answerType == 'img' && answerItem.text"
+            >
+              <div class="answer">
+                <img
+                  :src="answerItem.text"
+                  alt=""
+                  :preview="answerItem.timestamp"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- 中部推荐 -->
+        <div
+          class="greetings"
+          v-if="msgItem.centerQuestionList && msgItem.centerQuestionList.length"
+        >
+          <!-- <div class="greetings-title">
           已为您分配新冠肺炎相关专业医生，请咨询“新冠肺炎”健康问题吧
         </div> -->
-        <div class="guess">猜你要问</div>
-        <div class="greetings-content">
+          <div class="guess">猜你要问</div>
+          <div class="greetings-content">
+            <div
+              class="greetings-item"
+              v-for="(item, index) in msgItem.centerQuestionList"
+              :key="index"
+              @click.prevent="askQuestion(item)"
+            >
+              <label>{{ item }}</label>
+              <img src="../assets/images/arrow-icon.png" alt="" />
+            </div>
+          </div>
+          <div class="toChange">
+            <img src="../assets/images/route-icon.png" alt="" />
+            <span @click.prevent="getGreetings(msgItem, msgIndex)">换一换</span>
+          </div>
+        </div>
+
+        <!-- 问题 -->
+        <div class="question-wrap" v-if="msgItem.question != '开场'">
+          <div class="question">{{ msgItem.question }}</div>
+        </div>
+
+        <!--答案列表(提问的问题) -->
+        <template v-if="msgIndex != 0">
           <div
-            class="greetings-item"
-            v-for="(item, index) in greetingsArr"
-            :key="index"
-            @click.prevent="askQuestion(item.label)"
+            v-for="(answerItem, answerIndex) in msgItem.answerList"
+            :key="answerIndex"
           >
-            <label>{{ item.label }}</label>
-            <img src="../assets/images/arrow-icon.png" alt="" />
+            <!-- //text：文本， img：图片地址 ，video：视频地址 ，filepath：文件地址， imgAndText：卡片集合对象，excel:表格，object:自定义对象 （现阶段只考虑text img）-->
+            <div
+              class="answer-wrap"
+              v-if="answerItem.answerType == 'text' && answerItem.text"
+            >
+              <div
+                class="answer"
+                style="background: #fff"
+                v-html="answerItem.text"
+              ></div>
+            </div>
+            <div
+              class="answer-wrap"
+              v-if="answerItem.answerType == 'img' && answerItem.text"
+            >
+              <div class="answer">
+                <img
+                  :src="answerItem.text"
+                  alt=""
+                  :preview="answerItem.timestamp"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="toChange">
-          <img src="../assets/images/route-icon.png" alt="" />
-          <span @click.prevent="getGreetings()">换一换</span>
-        </div>
-      </div>
-      <div v-for="(qaItem, qaIndex) in qaArr" :key="qaIndex">
-        <div class="question-wrap">
-          <div class="question">{{ qaItem.question }}</div>
-        </div>
-        <div
-          class="answer-wrap"
-          v-if="qaItem.answerType == 0 && qaItem.answerText"
-        >
-          <div class="answer" style="background: #fff">
-            {{ qaItem.answerText }}
-          </div>
-        </div>
-        <div
-          class="answer-wrap"
-          v-if="qaItem.answerType == 1 && qaItem.answerText"
-        >
-          <div class="answer">
-            <img :src="qaItem.answerText" alt="" :preview="qaItem.timestamp" />
-          </div>
-        </div>
-        <div
-          class="answer-wrap"
-          v-if="qaItem.answerType == 2 && qaItem.answerText"
-        >
-          <div
-            class="answer"
-            v-html="qaItem.answerText"
-            style="background: #fff; color: #03a8fe; text-decoration: underline"
-          ></div>
-        </div>
+        </template>
       </div>
     </div>
     <div class="body-footer">
@@ -78,18 +122,30 @@
 
 <script>
 import util from "@/lib/util.js";
+import { sendMsg } from "@/api/robot";
 
 export default {
   name: "Index",
   components: {},
   data() {
     return {
-      questionTxt: "", //问题内容
       greetingsArr: [], //问候语数组，默认展示3条
       qaArr: [], //问答数组
+
+      questionTxt: "", //问题内容
+      eqId: "", //用户id
+      robotId: "166459906fd9abcccacbabcabgbfccbi903529ET", //机器人id
+      source: "wechatPub", //来源
+      businessType: "", //业务类型 open-开场 asr-提问
+      msgArr: [], //机器人消息数组
     };
   },
   created() {
+    this.eqId = util.GetParameterUrl("eqId");
+    console.log(this.eqId);
+
+    //获取开场推荐列表
+    this.businessType = "open"; //业务类型 open-开场 asr-提问
     this.getGreetings();
   },
   mounted() {},
@@ -102,88 +158,74 @@ export default {
       }
 
       if (questionTxt) {
-        this.qaArr.push({
+        this.businessType = "asr"; //业务类型 open-开场 asr-提问
+
+        var params = {
+          eqId: this.eqId,
+          robotId: this.robotId,
+          processId: "",
           question: questionTxt,
-          answerText: "",
-          answerType: 0,
-          timestamp: new Date().getTime(),
+          lat: "",
+          lng: "",
+          source: this.source,
+          businessType: this.businessType,
+          robotName: "",
+        };
+        sendMsg(params).then((res) => {
+          let resData = JSON.parse(res);
+          if (resData.data && resData.data.length) {
+            resData.data.forEach((item) => {
+              item.answerList &&
+                item.answerList.forEach((jtem) => {
+                  jtem.timestamp = new Date().getTime();
+                });
+            });
+          }
+          console.log("asr", resData);
+          this.msgArr.push(resData.data[0]);
+
+          //页面元素滚动到聊天室底部
+          this.$nextTick(() => {
+            let bodyContent = this.$refs.bodyContent; // 获取对象
+
+            document.documentElement.scrollTop = bodyContent.scrollHeight; // 滚动高度
+            document.body.scrollTop = bodyContent.scrollHeight;
+
+            //清空问题输入框
+            this.questionTxt = "";
+
+            //对图片预览插件初始化
+            this.$previewRefresh();
+          });
         });
-
-        //根据问题查询答案
-        // util.ajax.post(url,params).then(res=>{
-
-        //答案是文本
-        this.qaArr[this.qaArr.length - 1].answerText = "哈哈哈哈双方都";
-        this.qaArr[this.qaArr.length - 1].answerType = 0;
-        // //答案是图片
-        // this.qaArr[this.qaArr.length - 1].answerText =
-        //   "http://benyouhuifile.it168.com/forum/201709/04/142843gxbi5i5zbwtztbby.jpg";
-        // this.qaArr[this.qaArr.length - 1].answerType = 1;
-        // //答案是超链
-        // this.qaArr[this.qaArr.length - 1].answerText =
-        //   "<a href='https://www.baidu.com/'>百度</a>";
-        // this.qaArr[this.qaArr.length - 1].answerType = 2;
-        //页面元素滚动到聊天室底部
-        this.$nextTick(() => {
-          let bodyContent = this.$refs.bodyContent; // 获取对象
-          bodyContent.scrollTop = bodyContent.scrollHeight; // 滚动高度
-
-          document.documentElement.scrollTop = bodyContent.scrollHeight;
-          document.body.scrollTop = bodyContent.scrollHeight;
-
-          //清空问题输入框
-          this.questionTxt = "";
-
-          //对图片预览插件初始化
-          this.$previewRefresh();
-        });
-
-        // })
       }
     },
-    //获取问候语数组
+    //获取开场数组
     getGreetings() {
-      // util.ajax.get("/ad/get/19/1").then((res) => {
-      let resData = [
-        {
-          value: 0,
-          label: "新型冠状肺炎的症状是什么？",
-        },
-        {
-          value: 1,
-          label: "PC内弹出的对话页面?",
-        },
-        {
-          value: 2,
-          label: "微信内弹出的H5对话页面？",
-        },
-        {
-          value: 3,
-          label: "图片支持放大？",
-        },
-        {
-          value: 4,
-          label: "对话（@机器人）?",
-        },
-        {
-          value: 5,
-          label: "进群欢迎语?",
-        },
-        {
-          value: 6,
-          label: "定时推送消息?",
-        },
-        {
-          value: 7,
-          label: "答复推送?",
-        },
-        {
-          value: 8,
-          label: "PV、UV?",
-        },
-      ];
-      this.greetingsArr = util.getRandomElement(resData, 3);
-      // });
+      var params = {
+        eqId: this.eqId,
+        robotId: this.robotId,
+        processId: "",
+        question: "开场",
+        lat: "",
+        lng: "",
+        source: this.source,
+        businessType: this.businessType,
+        robotName: "",
+      };
+      sendMsg(params).then((res) => {
+        let resData = JSON.parse(res);
+        if (resData.data && resData.data.length) {
+          resData.data.forEach((item) => {
+            item.answerList &&
+              item.answerList.forEach((jtem) => {
+                jtem.timestamp = new Date().getTime();
+              });
+          });
+        }
+        console.log("open", resData);
+        this.msgArr.push(resData.data[0]);
+      });
     },
     // goDetail() {
     //   this.$router.push({ path: "/pages/Detail/123" });
@@ -193,6 +235,9 @@ export default {
 };
 </script>
 <style lang="scss">
+a:link {
+  color: #03a8fe;
+}
 a:visited {
   color: #03a8fe !important;
 } /* 已访问的链接 */
@@ -215,7 +260,7 @@ a:visited {
   }
   .body-content {
     width: 100%;
-    padding: 59px 17.5px;
+    padding: 69px 17.5px;
     background: #f1f2f5;
     min-height: 100vh;
     box-sizing: border-box;
@@ -280,7 +325,7 @@ a:visited {
         opacity: 1;
         border-radius: 10px 0px 10px 10px;
         color: #fff;
-        font-size: 16px;
+        font-size: 14px;
         padding: 9px 12.5px;
       }
     }
@@ -289,12 +334,11 @@ a:visited {
       .answer {
         margin-top: 15px;
         max-width: 275px;
-        // background: #ffffff;
         box-shadow: 0px 0px 30px rgba(110, 142, 196, 0.1);
         opacity: 1;
         border-radius: 0px 10px 10px 10px;
         padding: 9px 12.5px;
-        font-size: 16px;
+        font-size: 14px;
         color: #444444;
 
         img {
@@ -312,11 +356,13 @@ a:visited {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 44px;
+    // height: 44px;
     font-size: 17px;
-    padding: 10px 17.5px;
+    padding: 14px 17.5px;
     background: #f1f2f5;
-    // border-top: 1px solid #666;
+    max-width: 12.4rem;
+    margin: 0 auto;
+    box-sizing: border-box;
     .input-wrap {
       height: 41px;
       background: #ffffff;
@@ -327,6 +373,7 @@ a:visited {
       padding-left: 20px;
       padding-right: 82px;
       position: relative;
+      box-sizing: border-box;
 
       img {
         position: absolute;

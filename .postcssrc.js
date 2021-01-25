@@ -6,9 +6,9 @@ module.exports = {
         "postcss-url": {},
         // to edit target browsers: use "browserslist" field in package.json
         "autoprefixer": {},
-        "postcss-pxtorem": {
-            "rootValue": 37.5,
-            "propList": ["*"]
-        }
+        // "postcss-pxtorem": {
+        //     "rootValue": 37.5,
+        //     "propList": ["*"]
+        // }
     }
 }

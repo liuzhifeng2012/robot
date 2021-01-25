@@ -7,18 +7,89 @@ Vue.use(Toast);
 let env = process.env.NODE_ENV;
 
 let util = {};
-util.ajax = {};
-util.vars = {};
-util.pageTimer = {};//定义计时器全局变量，便于以后计时器的清除 赋值模拟：pageTimer["timer1"] = setInterval(function(){},2000);
+// util.ajax = {};
+// util.vars = {};
+// // util.pageTimer = {};//定义计时器全局变量，便于以后计时器的清除 赋值模拟：pageTimer["timer1"] = setInterval(function(){},2000);
 
-let domain = window.location.protocol + '//' + window.location.hostname + '/';
+// let domain = window.location.protocol + '//' + window.location.hostname + '/';
 
-util.vars.htmlUrl = domain;
-if (env == "development") {
-  util.vars.ajaxUrl = '/api/';
-} else {
-  util.vars.ajaxUrl = domain + 'api/';
-}
+function getQueryString(name) {
+  var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+  var r = window.location.search.substr(1).match(reg);
+  if (r != null) {
+    return decodeURIComponent(r[2]);
+  }
+  return null;
+};
+
+// let userKey = getQueryString("userKey") || "";
+
+// util.vars.htmlUrl = domain;
+// if (env == "development") {
+//   util.vars.ajaxUrl = '/webSmall/';
+// } else {
+//   util.vars.ajaxUrl = domain + 'webSmall/';
+// }
+
+// axios.defaults.timeout = 10000;
+// axios.interceptors.response.use(function (response) {
+//   // 数据请求成功
+//   if (response.data.code == 1) {
+//     return response.data;
+//   } else if (response.data.code == 0) {
+//     return Promise.reject(response);
+//   } else {
+//     return response.data;
+//   }
+
+// }, function (error) {
+//   if (error.toString().indexOf("timeout") != -1) {
+//     Toast('网络异常，请稍后再试！');
+//   }
+//   // 对响应错误做点什么
+//   return Promise.reject(error);
+
+// });
+// util.ajax.get = function (url, baseURL) {
+//   return new Promise((resolve, reject) => {
+
+//     axios({
+//       method: 'get',
+//       url,
+//       headers: {
+//         vfang_token: userKey,
+//         platform: 0
+//       },
+//       baseURL: baseURL || util.vars.ajaxUrl,
+//     }).then(res => {
+//       resolve(res)
+//     }).catch(err => {
+
+//       // console.dir(err);
+//     })
+//   });
+
+// };
+
+// util.ajax.post = function (url, params, baseURL) {
+
+//   return new Promise((resolve, reject) => {
+//     axios({
+//       method: 'post',
+//       url,
+//       headers: {
+//         vfang_token: userKey,
+//         platform: 0
+//       },
+//       data: params,
+//       baseURL: baseURL || util.vars.ajaxUrl,
+//     }).then(res => {
+//       resolve(res)
+//     }).catch(err => {
+//       // console.dir(err);
+//     })
+//   });
+// };
 
 /*
 ** randomWord 产生任意长度随机字母数字组合
@@ -43,83 +114,16 @@ util.randomWord = function (randomFlag, min, max) {
   return rstr;
 };
 
-axios.defaults.timeout = 10000;
-axios.interceptors.response.use(function (response) {
-  // 数据请求成功
-  if (response.data.code == 1) {
-    return response.data;
-  } else if (response.data.code == 0) {
-    return Promise.reject(response);
-  } else {
-    return response.data;
-  }
-
-}, function (error) {
-  if (error.toString().indexOf("timeout") != -1) {
-    Toast('网络异常，请稍后再试！');
-  }
-  // 对响应错误做点什么
-  return Promise.reject(error);
-
-});
-function getQueryString(name) {
-  var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-  var r = window.location.search.substr(1).match(reg);
-  if (r != null) {
-    return decodeURIComponent(r[2]);
-  }
-  return null;
-};
-let userKey = getQueryString("userKey") || "";
-
-util.ajax.get = function (url, baseURL) {
 
 
-  return new Promise((resolve, reject) => {
 
-    axios({
-      method: 'get',
-      url,
-      headers: {
-        vfang_token: userKey,
-        platform: 0
-      },
-      baseURL: baseURL || util.vars.ajaxUrl,
-    }).then(res => {
-      resolve(res)
-    }).catch(err => {
 
-      // console.dir(err);
-    })
-  });
-
-};
-util.ajax.post = function (url, params, baseURL) {
-
-  return new Promise((resolve, reject) => {
-    axios({
-      method: 'post',
-      url,
-      headers: {
-        vfang_token: userKey,
-        platform: 0
-      },
-      data: params,
-      baseURL: baseURL || util.vars.ajaxUrl,
-
-    }).then(res => {
-      resolve(res)
-    }).catch(err => {
-      // console.dir(err);
-    })
-  });
-};
 
 util.GetParameterUrl = function (name) {
   let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
   let urlLink = window.location.href;
   let hrefLink = urlLink.indexOf('?') > -1 ? urlLink.indexOf('#') > -1 ? urlLink.split('?')[1].split('#')[0] : urlLink.split('?')[1] : '';
-  console.log(hrefLink)
+  // console.log(hrefLink)
   let r = hrefLink.match(reg);
   if (r != null) return unescape(r[2]);
   return null;
@@ -179,6 +183,7 @@ util.formatDate = function (date) {
     }
   }
 };
+
 util.jsonStringify = function (arg) {
   let qsArr = [];
   for (let k in arg) {
@@ -193,6 +198,7 @@ util.jsonStringify = function (arg) {
   }
   return qsArr.join('&');
 };
+
 // 获取页面滚动的为空（横向和纵向）var json = {left: 10, right: 10}  变异
 //json.left   json.top
 util.getScrollPosition = function () {
@@ -216,6 +222,7 @@ util.getScrollPosition = function () {
     top: document.body.scrollTop
   }
 }
+
 //处理一下页面url，防止缓存
 util.getNoCacheUrl = function (curUrl) {
   //判断是否有参数，有参数的话加 &+时间戳；无参数加 ?+时间戳
