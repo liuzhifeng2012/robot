@@ -24,7 +24,7 @@ const createRouter = () => {
 
     // const prefixUrl = window.location.href.split('#')[0];
     // const url = `${prefixUrl}#${to.fullPath}`;
-    const url = `${window.location.protocol}//${window.location.host}${to.fullPath}`; 
+    const url = `${window.location.protocol}//${window.location.host}${to.fullPath}`;
     // if (to.meta.wechatLink) {
     //   var promise = wechatConfig(url)
     //   promise.then(d => {
@@ -38,25 +38,19 @@ const createRouter = () => {
       document.title = to.meta.title;
     }
 
-
-
     next();
     // util.vars.inTime = new Date().getTime();
   });
   router.afterEach((to, from) => {
-
+    console.log(to, from);
     // 页面添加数据埋点
-    if (from.meta.page_type) {
-
-      // util.ajax.post('/stat/pageAndButton', util.jsonStringify({
-      //   action_type: 1,
-      //   page_type: from.meta.page_type,
-      //   in_time: util.vars.inTime,
-      //   out_time: new Date().getTime(),
-      //   extra: from.query.id || ''
-      // })).then(res => {/*todu*/
-      // });
+    // if (to.meta.page_type) {
+    if (_hmt) {
+      if (to.path) {
+        _hmt.push(['_trackPageview', '/' + to.fullPath]);
+      }
     }
+    // }
 
   });
   return router;

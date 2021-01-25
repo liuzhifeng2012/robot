@@ -51,7 +51,7 @@
               :key="index"
               @click.prevent="askQuestion(item)"
             >
-              <label>{{ item }}</label>
+              <div class="greentings-label">{{ item }}</div>
               <img src="../assets/images/arrow-icon.png" alt="" />
             </div>
           </div>
@@ -122,7 +122,7 @@
 
 <script>
 import util from "@/lib/util.js";
-import { sendMsg } from "@/api/robot";
+import { sendMsg, searchRecommend } from "@/api/robot";
 import { Toast } from "vant";
 
 export default {
@@ -140,7 +140,7 @@ export default {
   },
   created() {
     this.eqId = util.GetParameterUrl("eqId");
-    console.log(this.eqId);
+    // console.log(this.eqId);
 
     //获取开场推荐列表
     this.businessType = "open"; //业务类型 open-开场 asr-提问
@@ -182,9 +182,29 @@ export default {
             }
             console.log("asr", resData);
             this.msgArr.push(resData.data[0]);
+
             //页面元素滚动到聊天室底部
             this.$nextTick(() => {
               let bodyContent = this.$refs.bodyContent; // 获取对象
+
+              // //获取最后答案中的超链接，改变属性 href="javascript:void(0)";同时增加click事件，百度统计埋点
+              // let allLink = document.links;
+              // for (let i = 0; i < allLink.length; i++) {
+              //   allLink[i].addEventListener(
+              //     "click",
+              //     function () {
+              //       if (_hmt) {
+              //         _hmt.push([
+              //           "_trackEvent",
+              //           "引导的超链接",
+              //           "click",
+              //           this.innerHTML,
+              //         ]);
+              //       }
+              //     },
+              //     false
+              //   );
+              // }
 
               document.documentElement.scrollTop = bodyContent.scrollHeight; // 滚动高度
               document.body.scrollTop = bodyContent.scrollHeight;
@@ -204,41 +224,42 @@ export default {
     },
     //获取开场数组
     getGreetings(msgItem) {
-      this.businessType = "open"; //业务类型 open-开场 asr-提问
-      var params = {
-        eqId: this.eqId,
-        robotId: this.robotId,
-        processId: "",
-        question: "开场",
-        lat: "",
-        lng: "",
-        source: this.source,
-        businessType: this.businessType,
-        robotName: "",
-      };
       //换一换
       if (msgItem) {
-        sendMsg(params).then((res) => {
-          let resData = JSON.parse(res);
-          if (resData.code == 2000) {
-            if (resData.data && resData.data.length) {
-              resData.data.forEach((item) => {
-                item.answerList &&
-                  item.answerList.forEach((jtem) => {
-                    jtem.timestamp = new Date().getTime();
-                  });
-              });
-            }
-            console.log("open 换一换", resData);
-            msgItem.centerQuestionList = resData.data[0].centerQuestionList;
+        var params = {
+          userId: this.eqId,
+          isStart: "",
+          size: 3,
+        };
+        searchRecommend(params).then((res) => {
+          if (res.processCode == 200) {
+            console.log(
+              "open 换一换",
+              Object.values(res.recommendedInfo.recommendedValueList[0])
+            );
+            msgItem.centerQuestionList = Object.values(
+              res.recommendedInfo.recommendedValueList[0]
+            );
           } else {
-            Toast(resData.msg);
+            // Toast(resData.msg);
             return;
           }
         });
       }
       //开场
       else {
+        this.businessType = "open"; //业务类型 open-开场 asr-提问
+        var params = {
+          eqId: this.eqId,
+          robotId: this.robotId,
+          processId: "",
+          question: "开场",
+          lat: "",
+          lng: "",
+          source: this.source,
+          businessType: this.businessType,
+          robotName: "",
+        };
         sendMsg(params).then((res) => {
           let resData = JSON.parse(res);
           if (resData.code == 2000) {
@@ -327,6 +348,13 @@ a:visited {
           align-items: center;
           justify-content: space-between;
           font-weight: 500;
+          .greentings-label {
+            width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            box-sizing: border-box;
+          }
           img {
             width: 5px;
             height: 9px;
