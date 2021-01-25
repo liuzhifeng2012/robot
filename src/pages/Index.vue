@@ -57,7 +57,7 @@
           </div>
           <div class="toChange">
             <img src="../assets/images/route-icon.png" alt="" />
-            <span @click.prevent="getGreetings(msgItem, msgIndex)">换一换</span>
+            <span @click.prevent="getGreetings(msgItem)">换一换</span>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export default {
   name: "Index",
   components: {},
   data() {
-    return {  
+    return {
       questionTxt: "", //问题内容
       eqId: "", //用户id
       robotId: "166459906fd9abcccacbabcabgbfccbi903529ET", //机器人id
@@ -203,7 +203,8 @@ export default {
       }
     },
     //获取开场数组
-    getGreetings(msgItem, msgIndex) {
+    getGreetings(msgItem) {
+      this.businessType = "open"; //业务类型 open-开场 asr-提问
       var params = {
         eqId: this.eqId,
         robotId: this.robotId,
