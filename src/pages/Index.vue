@@ -123,15 +123,13 @@
 <script>
 import util from "@/lib/util.js";
 import { sendMsg } from "@/api/robot";
+import { Toast } from "vant";
 
 export default {
   name: "Index",
   components: {},
   data() {
-    return {
-      greetingsArr: [], //问候语数组，默认展示3条
-      qaArr: [], //问答数组
-
+    return {  
       questionTxt: "", //问题内容
       eqId: "", //用户id
       robotId: "166459906fd9abcccacbabcabgbfccbi903529ET", //机器人id
@@ -173,30 +171,34 @@ export default {
         };
         sendMsg(params).then((res) => {
           let resData = JSON.parse(res);
-          if (resData.data && resData.data.length) {
-            resData.data.forEach((item) => {
-              item.answerList &&
-                item.answerList.forEach((jtem) => {
-                  jtem.timestamp = new Date().getTime();
-                });
+          if (resData.code == 2000) {
+            if (resData.data && resData.data.length) {
+              resData.data.forEach((item) => {
+                item.answerList &&
+                  item.answerList.forEach((jtem) => {
+                    jtem.timestamp = new Date().getTime();
+                  });
+              });
+            }
+            console.log("asr", resData);
+            this.msgArr.push(resData.data[0]);
+            //页面元素滚动到聊天室底部
+            this.$nextTick(() => {
+              let bodyContent = this.$refs.bodyContent; // 获取对象
+
+              document.documentElement.scrollTop = bodyContent.scrollHeight; // 滚动高度
+              document.body.scrollTop = bodyContent.scrollHeight;
+
+              //清空问题输入框
+              this.questionTxt = "";
+
+              //对图片预览插件初始化
+              this.$previewRefresh();
             });
+          } else {
+            Toast(resData.msg);
+            return;
           }
-          console.log("asr", resData);
-          this.msgArr.push(resData.data[0]);
-
-          //页面元素滚动到聊天室底部
-          this.$nextTick(() => {
-            let bodyContent = this.$refs.bodyContent; // 获取对象
-
-            document.documentElement.scrollTop = bodyContent.scrollHeight; // 滚动高度
-            document.body.scrollTop = bodyContent.scrollHeight;
-
-            //清空问题输入框
-            this.questionTxt = "";
-
-            //对图片预览插件初始化
-            this.$previewRefresh();
-          });
         });
       }
     },
@@ -217,32 +219,42 @@ export default {
       if (msgItem) {
         sendMsg(params).then((res) => {
           let resData = JSON.parse(res);
-          if (resData.data && resData.data.length) {
-            resData.data.forEach((item) => {
-              item.answerList &&
-                item.answerList.forEach((jtem) => {
-                  jtem.timestamp = new Date().getTime();
-                });
-            });
+          if (resData.code == 2000) {
+            if (resData.data && resData.data.length) {
+              resData.data.forEach((item) => {
+                item.answerList &&
+                  item.answerList.forEach((jtem) => {
+                    jtem.timestamp = new Date().getTime();
+                  });
+              });
+            }
+            console.log("open 换一换", resData);
+            msgItem.centerQuestionList = resData.data[0].centerQuestionList;
+          } else {
+            Toast(resData.msg);
+            return;
           }
-          console.log("open 换一换", resData); 
-          msgItem.centerQuestionList=resData[0].centerQuestionList
         });
       }
       //开场
       else {
         sendMsg(params).then((res) => {
           let resData = JSON.parse(res);
-          if (resData.data && resData.data.length) {
-            resData.data.forEach((item) => {
-              item.answerList &&
-                item.answerList.forEach((jtem) => {
-                  jtem.timestamp = new Date().getTime();
-                });
-            });
+          if (resData.code == 2000) {
+            if (resData.data && resData.data.length) {
+              resData.data.forEach((item) => {
+                item.answerList &&
+                  item.answerList.forEach((jtem) => {
+                    jtem.timestamp = new Date().getTime();
+                  });
+              });
+            }
+            console.log("open", resData);
+            this.msgArr.push(resData.data[0]);
+          } else {
+            Toast(resData.msg);
+            return;
           }
-          console.log("open", resData);
-          this.msgArr.push(resData.data[0]);
         });
       }
     },
