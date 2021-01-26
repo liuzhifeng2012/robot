@@ -8,7 +8,7 @@ Vue.use(VueRouter);
 const createRouter = () => {
 
   const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: '/',
     routes: routes,
     scrollBehavior(to, from, savedPosition) {
@@ -47,7 +47,7 @@ const createRouter = () => {
     // if (to.meta.page_type) {
     if (_hmt) {
       if (to.path) {
-        _hmt.push(['_trackPageview', '/' + to.fullPath]);
+        _hmt.push(['_trackPageview', '/#' + to.fullPath]);
       }
     }
     // }
