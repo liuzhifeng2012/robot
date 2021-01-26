@@ -7,7 +7,7 @@ export function searchRecommend(query) {
     url: '/robot/searchRecommend',
     method: 'get',
     params: query,
-    // baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com/'
+    baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com:10621/'
   })
 }
 
@@ -17,7 +17,7 @@ export function sendMsg(params) {
     url: '/webSmall/sendMsg',
     method: 'post',
     params: params,
-    // baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com/'
+    baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com:10620/'
   })
 } 
 

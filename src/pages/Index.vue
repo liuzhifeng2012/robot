@@ -140,6 +140,10 @@ export default {
   },
   created() {
     this.eqId = util.GetParameterUrl("eqId");
+    //如果没有eqId,先赋一下默认值
+    if(!this.eqId){
+      this.eqId='87zefk82pfk'
+    }
     // console.log(this.eqId);
 
     //获取开场推荐列表

@@ -18,8 +18,7 @@ service.interceptors.request.use(
     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
     config.headers['vfang-token'] = getToken()
     config.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-    // }  
-    config.baseURL = process.env.NODE_ENV == 'development' ? '' : 'http://hozonauto.ideepmind.com/'
+    // }   
     return config
   },
   error => {
