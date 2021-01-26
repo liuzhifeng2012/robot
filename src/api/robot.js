@@ -4,20 +4,18 @@ import qs from 'qs'
 
 export function searchRecommend(query) {
   return request({
-    url: '/robot/searchRecommend',
+    url: '/api/robot-process-semantic-service-dms/robot/searchRecommend',
     method: 'get',
     params: query,
-    baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com:10621/'
   })
 }
 
 //获得机器人问答信息列表
 export function sendMsg(params) {
   return request({
-    url: '/webSmall/sendMsg',
+    url: '/api/dms/webSmall/sendMsg',
     method: 'post',
     params: params,
-    baseURL:process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com:10620/'
   })
-} 
+}
 

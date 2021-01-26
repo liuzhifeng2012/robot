@@ -19,6 +19,7 @@ service.interceptors.request.use(
     config.headers['vfang-token'] = getToken()
     config.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
     // }   
+    config.baseURL=process.env.NODE_ENV=='development'?'':'http://hozonauto.ideepmind.com/'
     return config
   },
   error => {
