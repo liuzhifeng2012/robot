@@ -163,10 +163,10 @@ const webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, '../*.html'),
         to:  path.resolve(__dirname, '../dist'),
       },
-      {
-        from: path.resolve(__dirname, '../favicon.ico'),
-        to:  path.resolve(__dirname, '../dist'),
-      },
+      // {
+      //   from: path.resolve(__dirname, '../favicon.ico'),
+      //   to:  path.resolve(__dirname, '../dist'),
+      // },
       {
         from: path.resolve(__dirname, '../MP_verify_fXBFW098dc89E989.txt'),
         to:  path.resolve(__dirname, '../dist'),
