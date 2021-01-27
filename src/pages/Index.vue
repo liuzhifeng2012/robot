@@ -285,7 +285,7 @@ export default {
       }
     },
     // goDetail() {
-    //   this.$router.push({ path: "/pages/Detail/123" });
+    //   this.$router.push({ path: "/huofa/Detail/123" });
     // },
   },
   updated() {},

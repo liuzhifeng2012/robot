@@ -1,7 +1,7 @@
 
 export default [
     {
-        path: '/',
+        path: '/huofa',
         name: 'Index',
         component: () => import('@/pages/Index'),
         meta: {
@@ -10,7 +10,7 @@ export default [
         }
     },
     {
-        path: '/pages/Detail/:id',
+        path: '/huofa/Detail/:id',
         name: 'Detail',
         component: () => import('@/pages/Detail'),
         meta: {
@@ -19,13 +19,13 @@ export default [
         }
     },
     {
-        path: "/pages/Error404",
+        path: "/huofa/Error404",
         name: "Error404",
         component: () => import('@/pages/Error404'),
     },
     {
         path: "*",
-        redirect: "/"
+        redirect: "/huofa"
     },
 
 ]
